@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Plant Disease Detection</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+  </head>
+  <body>
+    <div class="container">
+      <header class="hero">
+        <h1>Plant Disease Detection</h1>
+        <p>Upload a leaf image to detect common plant diseases in seconds.</p>
+      </header>
+
+      <main class="panel">
+        <form method="post" enctype="multipart/form-data" class="upload-form">
+          <label for="image" class="custom-file-upload">Choose Image</label>
+          <input id="image" type="file" name="image" accept="image/*" required />
+          <button type="submit">Analyze Plant</button>
+        </form>
+
+        {% if image_url %}
+          <div class="preview-box">
+            <img src="{{ image_url }}" alt="Uploaded plant" />
+          </div>
+        {% endif %}
+
+        {% if result %}
+          <section class="result-card">
+            <div class="result-header">
+              <span class="badge">Prediction</span>
+              <h2>{{ result.label }}</h2>
+            </div>
+            <p class="confidence">Confidence: {{ result.confidence * 100 }}%</p>
+            <p>{{ result.details }}</p>
+            <div class="recommendation">
+              <strong>Recommendation:</strong>
+              <p>{{ result.recommendation }}</p>
+            </div>
+          </section>
+        {% endif %}
+      </main>
+    </div>
+
+    <script src="{{ url_for('static', filename='app.js') }}"></script>
+  </body>
+</html>
