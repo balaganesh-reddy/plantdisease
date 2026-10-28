@@ -2,7 +2,6 @@ from flask import Flask, render_template, request, redirect, url_for, send_from_
 from werkzeug.utils import secure_filename
 from PIL import Image
 import os
-import numpy as np
 from plant_model import classify_image
 
 app = Flask(__name__)
