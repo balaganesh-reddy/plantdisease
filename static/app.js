@@ -28,7 +28,7 @@ document.addEventListener('DOMContentLoaded', () => {
     te: {
       brandName: 'అగ్రివిజన్',
       heroTitle: 'స్మార్ట్ రోగనిర్ధారణతో ఆరోగ్యకరమైన పంటలు.',
-      heroSubtitle: 'ఆకు చిత్రం అప్లోడ్ చేయండి లేదా మీ లైవ్ కెమెరాని ఉపయోగించి early plant stress and disease conditionsను గుర్తించండి.',
+      heroSubtitle: 'ఆకు చిత్రం అప్లోడ్ చేయండి లేదా మీ లైవ్ కెమెరాను ఉపయోగించి మొలకెత్తుతున్న విశ్లేషణను గుర్తించండి.',
       plantScan: 'పంట స్కాన్',
       analyzeTitle: 'మీ పంటను విశ్లేషించండి',
       chooseImage: 'చిత్రాన్ని ఎంచుకోండి',

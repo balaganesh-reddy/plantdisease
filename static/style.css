@@ -218,11 +218,14 @@ body {
   gap: 18px;
 }
 
-.input-group {
+.stacked-controls {
   display: flex;
-  align-items: center;
-  gap: 12px;
-  flex-wrap: wrap;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.input-group {
+  display: block;
 }
 
 input[type='file'] {
@@ -242,6 +245,7 @@ button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  width: 100%;
   min-height: 52px;
   padding: 0 20px;
   background: linear-gradient(135deg, rgba(143, 227, 124, 0.28), rgba(126, 224, 184, 0.2));
@@ -289,6 +293,10 @@ button:hover,
   display: flex;
   flex-wrap: wrap;
   gap: 12px;
+}
+
+.actions-row > * {
+  flex: 1 1 180px;
 }
 
 .camera-box {
@@ -460,5 +468,10 @@ button:hover,
   .result-title-wrap {
     align-items: flex-start;
     flex-direction: column;
+  }
+
+  .lang-switcher {
+    top: 16px;
+    right: 16px;
   }
 }

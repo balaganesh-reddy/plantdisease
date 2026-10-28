@@ -39,14 +39,16 @@
           </div>
 
           <form id="plantForm" method="post" enctype="multipart/form-data" class="upload-form">
-            <div class="input-group">
-              <label for="image" class="custom-file-upload" data-i18n="chooseImage">Choose image</label>
-              <input id="image" type="file" name="image" accept="image/*" capture="environment" />
-            </div>
+            <div class="stacked-controls">
+              <div class="input-group">
+                <label for="image" class="custom-file-upload" data-i18n="chooseImage">Choose image</label>
+                <input id="image" type="file" name="image" accept="image/*" capture="environment" />
+              </div>
 
-            <div class="camera-box">
-              <video id="cameraPreview" autoplay playsinline muted></video>
-              <canvas id="cameraCanvas" width="640" height="480"></canvas>
+              <div class="camera-box">
+                <video id="cameraPreview" autoplay playsinline muted></video>
+                <canvas id="cameraCanvas" width="640" height="480"></canvas>
+              </div>
             </div>
 
             <div class="actions-row">
