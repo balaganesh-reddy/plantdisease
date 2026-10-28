@@ -5,6 +5,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const captureBtn = document.getElementById('captureBtn');
   const cameraPreview = document.getElementById('cameraPreview');
   const cameraCanvas = document.getElementById('cameraCanvas');
+  const previewImageBox = document.querySelector('.preview-box img');
   const langButtons = document.querySelectorAll('.lang-btn');
   const translations = {
     en: {
@@ -28,7 +29,7 @@ document.addEventListener('DOMContentLoaded', () => {
     te: {
       brandName: 'అగ్రివిజన్',
       heroTitle: 'స్మార్ట్ రోగనిర్ధారణతో ఆరోగ్యకరమైన పంటలు.',
-      heroSubtitle: 'ఆకు చిత్రం అప్లోడ్ చేయండి లేదా మీ లైవ్ కెమెరాను ఉపయోగించి మొలకెత్తుతున్న విశ్లేషణను గుర్తించండి.',
+      heroSubtitle: 'ఆకు చిత్రం అప్లోడ్ చేయండి లేదా మీ లైవ్ కెమెరాను ఉపయోగించి మొలకెత్తుతున్న పంట బలహీనతను గుర్తించండి.',
       plantScan: 'పంట స్కాన్',
       analyzeTitle: 'మీ పంటను విశ్లేషించండి',
       chooseImage: 'చిత్రాన్ని ఎంచుకోండి',
@@ -77,6 +78,12 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   };
 
+  const updatePreviewFromFile = (file) => {
+    if (!file || !previewImageBox) return;
+    const objectUrl = URL.createObjectURL(file);
+    previewImageBox.src = objectUrl;
+  };
+
   langButtons.forEach((button) => {
     button.addEventListener('click', () => {
       currentLang = button.dataset.lang;
@@ -85,7 +92,13 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   if (fileInput) {
-    fileInput.addEventListener('change', updateUploadLabel);
+    fileInput.addEventListener('change', () => {
+      updateUploadLabel();
+      const selectedFile = fileInput.files && fileInput.files[0];
+      if (selectedFile) {
+        updatePreviewFromFile(selectedFile);
+      }
+    });
     updateUploadLabel();
   }
 
@@ -162,8 +175,15 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         updateUploadLabel();
+        updatePreviewFromFile(file);
       }, 'image/png');
     });
+  }
+
+  const healthMeter = document.getElementById('healthMeter');
+  if (healthMeter) {
+    const percent = Math.max(0, Math.min(100, Number(healthMeter.style.width.replace('%', '')) || 0));
+    healthMeter.style.width = `${percent}%`;
   }
 
   window.addEventListener('beforeunload', stopCamera);

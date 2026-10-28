@@ -115,7 +115,7 @@ body {
 
 .hero {
   text-align: center;
-  margin-bottom: 32px;
+  margin-bottom: 24px;
 }
 
 .brand-row {
@@ -163,6 +163,34 @@ body {
   font-size: 1.08rem;
   line-height: 1.7;
   color: var(--muted);
+}
+
+.metrics-row {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+  margin-bottom: 28px;
+}
+
+.metric-card {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 18px 20px;
+  background: linear-gradient(180deg, rgba(20, 36, 27, 0.9), rgba(9, 18, 13, 0.9));
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 20px;
+  box-shadow: 0 12px 28px rgba(0,0,0,0.14);
+}
+
+.metric-label,
+.metric-card small {
+  color: var(--muted);
+}
+
+.metric-value {
+  font-size: clamp(1.5rem, 2vw, 2.2rem);
+  color: #f3fff4;
 }
 
 .dashboard {
@@ -403,6 +431,36 @@ button:hover,
   white-space: nowrap;
 }
 
+.meter-wrap {
+  margin-top: 18px;
+}
+
+.meter-labels {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  color: var(--muted);
+  font-size: 0.82rem;
+  margin-bottom: 8px;
+}
+
+.meter-track {
+  width: 100%;
+  height: 12px;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.08);
+  overflow: hidden;
+  border: 1px solid rgba(255,255,255,0.06);
+}
+
+.meter-fill {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #7feab3, #d8ff98, #b9ff7a);
+  box-shadow: 0 0 18px rgba(133, 255, 170, 0.4);
+}
+
 .result-description {
   margin-top: 16px;
   font-size: 1.02rem;
@@ -447,6 +505,12 @@ button:hover,
   .preview-panel,
   .result-panel {
     grid-column: auto;
+  }
+}
+
+@media (max-width: 720px) {
+  .metrics-row {
+    grid-template-columns: 1fr;
   }
 }
 

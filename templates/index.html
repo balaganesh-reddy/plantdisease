@@ -31,6 +31,24 @@
         </p>
       </header>
 
+      <section class="metrics-row">
+        <div class="metric-card">
+          <span class="metric-label">Crop health</span>
+          <strong class="metric-value">92%</strong>
+          <small>Strong</small>
+        </div>
+        <div class="metric-card">
+          <span class="metric-label">Soil moisture</span>
+          <strong class="metric-value">68%</strong>
+          <small>Balanced</small>
+        </div>
+        <div class="metric-card">
+          <span class="metric-label">Disease risk</span>
+          <strong class="metric-value">Low</strong>
+          <small>Stable</small>
+        </div>
+      </section>
+
       <main class="dashboard">
         <section class="panel upload-panel">
           <div class="panel-heading">
@@ -88,6 +106,16 @@
               <div class="result-title-wrap">
                 <h3>{{ result.label }}</h3>
                 <span class="confidence-badge">{{ (result.confidence * 100)|int }}% confidence</span>
+              </div>
+
+              <div class="meter-wrap">
+                <div class="meter-labels">
+                  <span>Health score</span>
+                  <span>{{ (result.confidence * 100)|int }}%</span>
+                </div>
+                <div class="meter-track">
+                  <span class="meter-fill" id="healthMeter" style="width: {{ (result.confidence * 100)|int }}%"></span>
+                </div>
               </div>
 
               <p class="result-description">{{ result.details }}</p>
