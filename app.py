@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for, send_from_directory
 from werkzeug.utils import secure_filename
 from PIL import Image
 import os
@@ -15,6 +15,11 @@ os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in app.config['ALLOWED_EXTENSIONS']
+
+
+@app.route('/uploads/<filename>')
+def uploaded_file(filename):
+    return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
 
 
 @app.route('/', methods=['GET', 'POST'])
@@ -36,7 +41,7 @@ def index():
             file.save(image_path)
 
             result = classify_image(image_path)
-            image_url = url_for('static', filename='uploads/' + filename)
+            image_url = url_for('uploaded_file', filename=filename)
 
     return render_template('index.html', result=result, image_url=image_url)
 
