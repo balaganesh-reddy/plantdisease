@@ -3,40 +3,92 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Plant Disease Detection</title>
+    <title>AgriVision | Plant Disease Detection</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
   </head>
   <body>
+    <div class="bg-orb orb-1"></div>
+    <div class="bg-orb orb-2"></div>
+    <div class="bg-grid"></div>
+
     <div class="container">
       <header class="hero">
-        <h1>Plant Disease Detection</h1>
-        <p>Upload a leaf image to detect common plant diseases in seconds.</p>
+        <div class="brand-row">
+          <div class="brand-icon">🌿</div>
+          <span class="brand-name">AgriVision</span>
+        </div>
+        <h1>Healthy crops start with smart diagnosis.</h1>
+        <p>
+          Upload a leaf image or use your live camera to detect early plant stress and disease conditions.
+        </p>
       </header>
 
-      <main class="panel">
-        <form method="post" enctype="multipart/form-data" class="upload-form">
-          <label for="image" class="custom-file-upload">Choose Image</label>
-          <input id="image" type="file" name="image" accept="image/*" required />
-          <button type="submit">Analyze Plant</button>
-        </form>
-
-        {% if image_url %}
-          <div class="preview-box">
-            <img src="{{ image_url }}" alt="Uploaded plant" />
+      <main class="dashboard">
+        <section class="panel upload-panel">
+          <div class="panel-heading">
+            <span class="eyebrow">Plant scan</span>
+            <h2>Analyze your crop</h2>
           </div>
-        {% endif %}
+
+          <form id="plantForm" method="post" enctype="multipart/form-data" class="upload-form">
+            <div class="input-group">
+              <label for="image" class="custom-file-upload">Choose image</label>
+              <input id="image" type="file" name="image" accept="image/*" capture="environment" />
+            </div>
+
+            <div class="camera-box">
+              <video id="cameraPreview" autoplay playsinline muted></video>
+              <canvas id="cameraCanvas" width="640" height="480"></canvas>
+            </div>
+
+            <div class="actions-row">
+              <button type="button" id="startCameraBtn" class="secondary-btn">Turn on camera</button>
+              <button type="button" id="captureBtn" class="accent-btn" disabled>Capture photo</button>
+              <button type="submit" class="primary-btn">Analyze plant</button>
+            </div>
+          </form>
+        </section>
+
+        <section class="panel preview-panel">
+          <div class="panel-heading">
+            <span class="eyebrow">Preview</span>
+            <h2>Image capture</h2>
+          </div>
+
+          {% if image_url %}
+            <div class="preview-box">
+              <img src="{{ image_url }}" alt="Uploaded plant" />
+            </div>
+          {% else %}
+            <div class="empty-state">
+              <div class="empty-icon">📷</div>
+              <p>Capture a live photo or upload an image to begin analysis.</p>
+            </div>
+          {% endif %}
+        </section>
 
         {% if result %}
-          <section class="result-card">
-            <div class="result-header">
-              <span class="badge">Prediction</span>
-              <h2>{{ result.label }}</h2>
+          <section class="panel result-panel">
+            <div class="panel-heading result-header-row">
+              <span class="eyebrow">Prediction</span>
+              <div class="status-pill">AI Soil & Leaf Check</div>
             </div>
-            <p class="confidence">Confidence: {{ result.confidence * 100 }}%</p>
-            <p>{{ result.details }}</p>
-            <div class="recommendation">
-              <strong>Recommendation:</strong>
-              <p>{{ result.recommendation }}</p>
+
+            <div class="result-main">
+              <div class="result-title-wrap">
+                <h3>{{ result.label }}</h3>
+                <span class="confidence-badge">{{ (result.confidence * 100)|int }}% confidence</span>
+              </div>
+
+              <p class="result-description">{{ result.details }}</p>
+
+              <div class="recommendation-card">
+                <strong>Recommendation</strong>
+                <p>{{ result.recommendation }}</p>
+              </div>
             </div>
           </section>
         {% endif %}
