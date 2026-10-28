@@ -14,14 +14,19 @@
     <div class="bg-orb orb-2"></div>
     <div class="bg-grid"></div>
 
+    <div class="lang-switcher" aria-label="Language selector">
+      <button class="lang-btn active" type="button" data-lang="en">EN</button>
+      <button class="lang-btn" type="button" data-lang="te">తెలు</button>
+    </div>
+
     <div class="container">
       <header class="hero">
         <div class="brand-row">
           <div class="brand-icon">🌿</div>
-          <span class="brand-name">AgriVision</span>
+          <span class="brand-name" data-i18n="brandName">AgriVision</span>
         </div>
-        <h1>Healthy crops start with smart diagnosis.</h1>
-        <p>
+        <h1 data-i18n="heroTitle">Healthy crops start with smart diagnosis.</h1>
+        <p data-i18n="heroSubtitle">
           Upload a leaf image or use your live camera to detect early plant stress and disease conditions.
         </p>
       </header>
@@ -29,13 +34,13 @@
       <main class="dashboard">
         <section class="panel upload-panel">
           <div class="panel-heading">
-            <span class="eyebrow">Plant scan</span>
-            <h2>Analyze your crop</h2>
+            <span class="eyebrow" data-i18n="plantScan">Plant scan</span>
+            <h2 data-i18n="analyzeTitle">Analyze your crop</h2>
           </div>
 
           <form id="plantForm" method="post" enctype="multipart/form-data" class="upload-form">
             <div class="input-group">
-              <label for="image" class="custom-file-upload">Choose image</label>
+              <label for="image" class="custom-file-upload" data-i18n="chooseImage">Choose image</label>
               <input id="image" type="file" name="image" accept="image/*" capture="environment" />
             </div>
 
@@ -45,17 +50,17 @@
             </div>
 
             <div class="actions-row">
-              <button type="button" id="startCameraBtn" class="secondary-btn">Turn on camera</button>
-              <button type="button" id="captureBtn" class="accent-btn" disabled>Capture photo</button>
-              <button type="submit" class="primary-btn">Analyze plant</button>
+              <button type="button" id="startCameraBtn" class="secondary-btn" data-i18n="startCamera">Turn on camera</button>
+              <button type="button" id="captureBtn" class="accent-btn" disabled data-i18n="capturePhoto">Capture photo</button>
+              <button type="submit" class="primary-btn" data-i18n="analyzeButton">Analyze plant</button>
             </div>
           </form>
         </section>
 
         <section class="panel preview-panel">
           <div class="panel-heading">
-            <span class="eyebrow">Preview</span>
-            <h2>Image capture</h2>
+            <span class="eyebrow" data-i18n="preview">Preview</span>
+            <h2 data-i18n="imageCapture">Image capture</h2>
           </div>
 
           {% if image_url %}
@@ -65,7 +70,7 @@
           {% else %}
             <div class="empty-state">
               <div class="empty-icon">📷</div>
-              <p>Capture a live photo or upload an image to begin analysis.</p>
+              <p data-i18n="emptyState">Capture a live photo or upload an image to begin analysis.</p>
             </div>
           {% endif %}
         </section>
@@ -73,8 +78,8 @@
         {% if result %}
           <section class="panel result-panel">
             <div class="panel-heading result-header-row">
-              <span class="eyebrow">Prediction</span>
-              <div class="status-pill">AI Soil & Leaf Check</div>
+              <span class="eyebrow" data-i18n="prediction">Prediction</span>
+              <div class="status-pill" data-i18n="statusPill">AI Soil & Leaf Check</div>
             </div>
 
             <div class="result-main">
@@ -86,7 +91,7 @@
               <p class="result-description">{{ result.details }}</p>
 
               <div class="recommendation-card">
-                <strong>Recommendation</strong>
+                <strong data-i18n="recommendation">Recommendation</strong>
                 <p>{{ result.recommendation }}</p>
               </div>
             </div>
