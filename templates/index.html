@@ -1,135 +1,49 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>AgriVision | Plant Disease Detection</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
-  </head>
-  <body>
-    <div class="bg-orb orb-1"></div>
-    <div class="bg-orb orb-2"></div>
-    <div class="bg-grid"></div>
+from flask import Flask, render_template, request, redirect, url_for, send_from_directory
+from werkzeug.utils import secure_filename
+import os
+from plant_model import classify_image
 
-    <div class="lang-switcher" aria-label="Language selector">
-      <button class="lang-btn active" type="button" data-lang="en">EN</button>
-      <button class="lang-btn" type="button" data-lang="te">తెలు</button>
-    </div>
+app = Flask(__name__)
+app.config['UPLOAD_FOLDER'] = 'uploads'
+app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
+app.config['ALLOWED_EXTENSIONS'] = {'png', 'jpg', 'jpeg', 'webp'}
 
-    <div class="container">
-      <header class="hero">
-        <div class="brand-row">
-          <div class="brand-icon">🌿</div>
-          <span class="brand-name" data-i18n="brandName">AgriVision</span>
-        </div>
-        <h1 data-i18n="heroTitle">Healthy crops start with smart diagnosis.</h1>
-        <p data-i18n="heroSubtitle">
-          Upload a leaf image or use your live camera to detect early plant stress and disease conditions.
-        </p>
-      </header>
+os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 
-      <section class="metrics-row">
-        <div class="metric-card">
-          <span class="metric-label">Crop health</span>
-          <strong class="metric-value">92%</strong>
-          <small>Strong</small>
-        </div>
-        <div class="metric-card">
-          <span class="metric-label">Soil moisture</span>
-          <strong class="metric-value">68%</strong>
-          <small>Balanced</small>
-        </div>
-        <div class="metric-card">
-          <span class="metric-label">Disease risk</span>
-          <strong class="metric-value">Low</strong>
-          <small>Stable</small>
-        </div>
-      </section>
 
-      <main class="dashboard">
-        <section class="panel upload-panel">
-          <div class="panel-heading">
-            <span class="eyebrow" data-i18n="plantScan">Plant scan</span>
-            <h2 data-i18n="analyzeTitle">Analyze your crop</h2>
-          </div>
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in app.config['ALLOWED_EXTENSIONS']
 
-          <form id="plantForm" method="post" enctype="multipart/form-data" class="upload-form">
-            <div class="stacked-controls">
-              <div class="input-group">
-                <label for="image" class="custom-file-upload" data-i18n="chooseImage">Choose image</label>
-                <input id="image" type="file" name="image" accept="image/*" capture="environment" />
-              </div>
 
-              <div class="camera-box">
-                <video id="cameraPreview" autoplay playsinline muted></video>
-                <canvas id="cameraCanvas" width="640" height="480"></canvas>
-              </div>
-            </div>
+@app.route('/uploads/<filename>')
+def uploaded_file(filename):
+    return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
 
-            <div class="actions-row">
-              <button type="button" id="startCameraBtn" class="secondary-btn" data-i18n="startCamera">Turn on camera</button>
-              <button type="button" id="captureBtn" class="accent-btn" disabled data-i18n="capturePhoto">Capture photo</button>
-              <button type="submit" class="primary-btn" data-i18n="analyzeButton">Analyze plant</button>
-            </div>
-          </form>
-        </section>
 
-        <section class="panel preview-panel">
-          <div class="panel-heading">
-            <span class="eyebrow" data-i18n="preview">Preview</span>
-            <h2 data-i18n="imageCapture">Image capture</h2>
-          </div>
+@app.route('/', methods=['GET', 'POST'])
+def index():
+    result = None
+    image_url = None
 
-          {% if image_url %}
-            <div class="preview-box">
-              <img src="{{ image_url }}" alt="Uploaded plant" />
-            </div>
-          {% else %}
-            <div class="empty-state">
-              <div class="empty-icon">📷</div>
-              <p data-i18n="emptyState">Capture a live photo or upload an image to begin analysis.</p>
-            </div>
-          {% endif %}
-        </section>
+    if request.method == 'POST':
+        if 'image' not in request.files:
+            return redirect(request.url)
 
-        {% if result %}
-          <section class="panel result-panel">
-            <div class="panel-heading result-header-row">
-              <span class="eyebrow" data-i18n="prediction">Prediction</span>
-              <div class="status-pill" data-i18n="statusPill">AI Soil & Leaf Check</div>
-            </div>
+        file = request.files['image']
+        if file.filename == '':
+            return redirect(request.url)
 
-            <div class="result-main">
-              <div class="result-title-wrap">
-                <h3>{{ result.label }}</h3>
-                <span class="confidence-badge">{{ (result.confidence * 100)|int }}% confidence</span>
-              </div>
+        if file and allowed_file(file.filename):
+            filename = secure_filename(file.filename)
+            image_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+            file.save(image_path)
+            result = classify_image(image_path)
+            image_url = url_for('uploaded_file', filename=filename)
+            result['image_url'] = image_url
 
-              <div class="meter-wrap">
-                <div class="meter-labels">
-                  <span>Health score</span>
-                  <span>{{ (result.confidence * 100)|int }}%</span>
-                </div>
-                <div class="meter-track">
-                  <span class="meter-fill" id="healthMeter" style="width: {{ (result.confidence * 100)|int }}%"></span>
-                </div>
-              </div>
+    return render_template('index.html', result=result, image_url=image_url)
 
-              <p class="result-description">{{ result.details }}</p>
 
-              <div class="recommendation-card">
-                <strong data-i18n="recommendation">Recommendation</strong>
-                <p>{{ result.recommendation }}</p>
-              </div>
-            </div>
-          </section>
-        {% endif %}
-      </main>
-    </div>
-
-    <script src="{{ url_for('static', filename='app.js') }}"></script>
-  </body>
-</html>
+if __name__ == '__main__':
+    port = int(os.environ.get('PORT', 5000))
+    app.run(debug=False, host='0.0.0.0', port=port)

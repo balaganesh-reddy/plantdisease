@@ -7,6 +7,9 @@ document.addEventListener('DOMContentLoaded', () => {
   const cameraCanvas = document.getElementById('cameraCanvas');
   const previewImageBox = document.querySelector('.preview-box img');
   const langButtons = document.querySelectorAll('.lang-btn');
+  const dropZone = document.getElementById('dropZone');
+  const scanHistoryContainer = document.getElementById('scanHistory');
+  const resultPanel = document.querySelector('[data-result="true"]');
   const translations = {
     en: {
       brandName: 'AgriVision',
@@ -48,6 +51,73 @@ document.addEventListener('DOMContentLoaded', () => {
 
   let currentLang = 'en';
   let stream = null;
+
+  function getHistory() {
+    try {
+      return JSON.parse(localStorage.getItem('plantScanHistory') || '[]');
+    } catch (error) {
+      return [];
+    }
+  }
+
+  function saveHistory(history) {
+    localStorage.setItem('plantScanHistory', JSON.stringify(history.slice(0, 5)));
+  }
+
+  function renderHistory() {
+    if (!scanHistoryContainer) return;
+
+    const history = getHistory();
+    if (!history.length) {
+      scanHistoryContainer.innerHTML = '<div class="history-empty">No recent scans yet. Upload or capture an image to get started.</div>';
+      return;
+    }
+
+    scanHistoryContainer.innerHTML = history.map((item) => `
+      <div class="history-item">
+        ${item.imageUrl ? `<img class="history-thumb" src="${item.imageUrl}" alt="${item.label}" />` : ''}
+        <div>
+          <h4>${item.label}</h4>
+          <div class="history-meta">
+            <span>${item.severity}</span>
+            <span>${item.healthScore}%</span>
+          </div>
+          <div class="history-meta">
+            <span>${item.date}</span>
+            <span>${item.confidence}%</span>
+          </div>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  function addToHistoryFromResult() {
+    const panel = document.querySelector('[data-result="true"]');
+    if (!panel) return;
+
+    const label = panel.dataset.label || 'Plant scan';
+    const confidence = panel.dataset.confidence || '0';
+    const severity = panel.dataset.severity || 'Unknown';
+    const healthScore = panel.dataset.healthScore || '0';
+    const imageUrl = panel.dataset.imageUrl || '';
+    const summary = panel.dataset.summary || label;
+
+    const history = getHistory();
+    const newEntry = {
+      label,
+      severity,
+      healthScore: Number(healthScore),
+      confidence: Number(confidence) * 100,
+      date: new Date().toLocaleDateString(),
+      imageUrl,
+      summary
+    };
+
+    const filtered = history.filter((item) => !(item.imageUrl && item.imageUrl === imageUrl && item.label === label));
+    filtered.unshift(newEntry);
+    saveHistory(filtered);
+    renderHistory();
+  }
 
   const updateUploadLabel = () => {
     if (!customUploadLabel) return;
@@ -100,6 +170,32 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
     updateUploadLabel();
+  }
+
+  if (dropZone) {
+    ['dragenter', 'dragover'].forEach((eventName) => {
+      dropZone.addEventListener(eventName, (event) => {
+        event.preventDefault();
+        dropZone.classList.add('drag-over');
+      });
+    });
+
+    ['dragleave', 'drop'].forEach((eventName) => {
+      dropZone.addEventListener(eventName, (event) => {
+        event.preventDefault();
+        dropZone.classList.remove('drag-over');
+      });
+    });
+
+    dropZone.addEventListener('drop', (event) => {
+      const file = event.dataTransfer && event.dataTransfer.files && event.dataTransfer.files[0];
+      if (!file) return;
+      const dataTransfer = new DataTransfer();
+      dataTransfer.items.add(file);
+      fileInput.files = dataTransfer.files;
+      updateUploadLabel();
+      updatePreviewFromFile(file);
+    });
   }
 
   const stopCamera = () => {
@@ -180,10 +276,10 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  const healthMeter = document.getElementById('healthMeter');
-  if (healthMeter) {
-    const percent = Math.max(0, Math.min(100, Number(healthMeter.style.width.replace('%', '')) || 0));
-    healthMeter.style.width = `${percent}%`;
+  if (resultPanel) {
+    addToHistoryFromResult();
+  } else {
+    renderHistory();
   }
 
   window.addEventListener('beforeunload', stopCamera);
